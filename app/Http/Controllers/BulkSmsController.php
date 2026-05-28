@@ -63,10 +63,10 @@ class BulkSmsController extends Controller
 
     public function history()
     {
-        $smslogs = SmsLog::where('user_id', auth()->id())
+        $smsLogs = SmsLog::where('user_id', auth()->id())
             ->latest()
             ->get();
 
-        return view('sms.history', compact('smslogs'));
+        return view('sms.history', compact('smsLogs'));
     }
 }
