@@ -3,17 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-use App\Models\Senderid;
+use App\Models\SenderId;
 use App\Models\SmsLog;
-use App\Models\Transaction;
 use App\Models\Wallet;
 
 class BulkSmsController extends Controller
 {
     public function index()
     {
-        $senderids = Senderid::where('user_id', auth()->id())
+        $senderids = SenderId::where('user_id', auth()->id())
             ->where('status', 'approved')
             ->get();
 
@@ -25,126 +23,41 @@ class BulkSmsController extends Controller
         $request->validate([
             'sender_id_id' => 'required',
             'message' => 'required',
-            'numbers_file' => 'required|file|mimes:txt,csv',
+            'numbers' => 'required',
         ]);
 
-        $user = auth()->user();
-
-        $wallet = Wallet::where('user_id', $user->id)->first();
+        $wallet = Wallet::where('user_id', auth()->id())->first();
 
         if (!$wallet) {
-
-            return redirect('/send-sms')->with(
-                'error',
-                'Wallet not found.'
-            );
+            return back()->with('error', 'Wallet not found.');
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Read Numbers File
-        |--------------------------------------------------------------------------
-        */
+        $numbers = explode(',', $request->numbers);
 
-        $numbers = file(
-            $request->file('numbers_file')->getRealPath(),
-            FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
-        );
+        $smsCount = count($numbers);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Clean Numbers
-        |--------------------------------------------------------------------------
-        */
+        $costPerSms = 1;
 
-        $numbers = array_filter(array_map('trim', $numbers));
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pricing
-        |--------------------------------------------------------------------------
-        */
-
-        $pricePerSms = 0.05;
-
-        $totalCost = count($numbers) * $pricePerSms;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Check Balance
-        |--------------------------------------------------------------------------
-        */
+        $totalCost = $smsCount * $costPerSms;
 
         if ($wallet->balance < $totalCost) {
-
-            return redirect('/send-sms')->with(
-                'error',
-                'Insufficient balance for bulk campaign.'
-            );
+            return back()->with('error', 'Insufficient wallet balance.');
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Deduct Wallet
-        |--------------------------------------------------------------------------
-        */
+        $wallet->balance -= $totalCost;
+        $wallet->save();
 
-        $wallet->decrement('balance', $totalCost);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Save Transaction
-        |--------------------------------------------------------------------------
-        */
-
-        Transaction::create([
-            'user_id' => $user->id,
-            'amount' => $totalCost,
-            'type' => 'bulk_sms_charge',
-            'description' => 'Bulk SMS campaign charge',
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Simulate SMS Sending
-        |--------------------------------------------------------------------------
-        */
-
-        foreach ($numbers as $phone) {
+        foreach ($numbers as $number) {
 
             SmsLog::create([
-
-                'user_id' => $user->id,
-
+                'user_id' => auth()->id(),
                 'sender_id_id' => $request->sender_id_id,
-
-                'phone_number' => $phone,
-
+                'number' => trim($number),
                 'message' => $request->message,
-
-                'cost' => $pricePerSms,
-
                 'status' => 'sent',
-
-                'provider' => 'Bulk SMS Simulator',
-
-                'provider_message_id' => 'BULK' . rand(100000, 999999),
-
             ]);
         }
 
-        return redirect('/send-sms')->with(
-            'success',
-            count($numbers) . ' SMS messages sent successfully.'
-        );
-    }
-
-    public function history()
-    {
-        $smsLogs = SmsLog::where('user_id', auth()->id())
-            ->latest()
-            ->paginate(20);
-
-        return view('sms.history', compact('smsLogs'));
+        return back()->with('success', 'Bulk SMS sent successfully.');
     }
 }
