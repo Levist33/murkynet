@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Senderid extends Model
+class SenderId extends Model
 {
     protected $table = 'senderids';
 
