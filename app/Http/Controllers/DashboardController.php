@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CallerId;
-use App\Models\Senderid;
+use App\Models\SenderId;
 use App\Models\CallLog;
 use App\Models\Deposit;
 use App\Models\SmsLog;
@@ -156,7 +156,7 @@ class DashboardController extends Controller
                 ];
             });
 
-        $senderActivities = Senderid::where('user_id', $user->id)
+        $senderActivities = SenderId::where('user_id', $user->id)
             ->latest()
             ->take(5)
             ->get()
