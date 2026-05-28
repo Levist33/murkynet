@@ -60,4 +60,13 @@ class BulkSmsController extends Controller
 
         return back()->with('success', 'Bulk SMS sent successfully.');
     }
+
+    public function history()
+    {
+        $smslogs = SmsLog::where('user_id', auth()->id())
+            ->latest()
+            ->get();
+
+        return view('sms.history', compact('smslogs'));
+    }
 }
