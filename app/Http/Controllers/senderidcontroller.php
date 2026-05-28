@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\SenderID;
 
 class SenderIdController extends Controller
@@ -25,7 +24,7 @@ class SenderIdController extends Controller
             'sender_id' => 'required|max:11',
         ]);
 
-        Senderid::create([
+        SenderID::create([
             'user_id' => auth()->id(),
 
             'sender_id' => $request->sender_id,
