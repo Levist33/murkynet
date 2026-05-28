@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\Senderid;
+use App\Models\SenderID;
 
 class SenderidController extends Controller
 {
     public function index()
     {
-        $senderids = Senderid::where('user_id', auth()->id())
+        $senderids = SenderID::where('user_id', auth()->id())
             ->latest()
             ->get();
 
