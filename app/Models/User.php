@@ -8,7 +8,7 @@ use App\Models\CallLog;
 use App\Models\CallerId;
 use App\Models\Deposit;
 use App\Models\SmsLog;
-use App\Models\Senderid;
+use App\Models\SenderId;
 use App\Models\Transaction;
 use App\Models\Wallet;
 
@@ -113,7 +113,7 @@ class User extends Authenticatable
 
     public function senderids()
     {
-        return $this->hasMany(Senderid::class);
+        return $this->hasMany(SenderId::class);
     }
 
     /*
