@@ -72,7 +72,7 @@
                     </p>
 
                     <h3 class="text-4xl font-bold text-orange-500">
-                        ${{ number_format($wallet->balance, 2) }}
+                        ${{ number_format($wallet?->balance ?? 0, 2) }}
                     </h3>
 
                 </div>
