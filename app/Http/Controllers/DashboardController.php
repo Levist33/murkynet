@@ -163,7 +163,7 @@ class DashboardController extends Controller
             ->map(function ($sender) {
 
                 return [
-                    'type' => 'senderid',
+                    'type' => 'senderId',
                     'message' => 'Sender ID submitted: ' . $sender->sender_id,
                     'time' => $sender->created_at,
                 ];
