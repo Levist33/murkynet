@@ -7,7 +7,7 @@ use App\Http\Controllers\BulkSmsController;
 use App\Http\Controllers\CallController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepositController;
-use App\Http\Controllers\SenderidController;
+use App\Http\Controllers\SenderIdController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -47,9 +47,9 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/senderids', [SenderidController::class, 'index']);
+    Route::get('/senderids', [SenderIdController::class, 'index']);
 
-    Route::post('/senderids', [SenderidController::class, 'store']);
+    Route::post('/senderids', [SenderIdController::class, 'store']);
 
     /*
     |--------------------------------------------------------------------------
