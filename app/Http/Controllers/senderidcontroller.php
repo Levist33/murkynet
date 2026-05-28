@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\SenderID;
 
-class SenderidController extends Controller
+class SenderIdController extends Controller
 {
     public function index()
     {
